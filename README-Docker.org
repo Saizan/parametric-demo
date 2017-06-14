@@ -1,0 +1,78 @@
+* Parametric Quantifiers for Dependent Type Theory
+
+  This is a Docker image containing a ready-to-use prototype implementation of
+  the type system presented in the ICFP2017 paper "Parametric Quantifiers for
+  Dependent Type Theory" (as a modification of Agda).
+
+** How to use:
+*** Open an (existing or new) Agda file
+
+    See below for some interesting Agda files you may want to look at
+    
+*** Read/edit/type-check/...
+   
+    Newcomer instructions to Agda in emacs can be found here:
+    [[http://wiki.portal.chalmers.se/agda/pmwiki.php?n=Main.QuickGuideToEditingTypeCheckingAndCompilingAgdaCode]] 
+    
+
+** What can I look at?
+
+   Here is a list of files under /root/ that you may want to look at.
+
+*** Some basics are explained in
+
+    README.agda
+
+*** Section 2 corresponds to the file
+
+    IntroExample.agda
+
+*** Section 4.1 "Church and co-Church encoded data types" refers to the files
+
+    Church/InitialAlgebras.agda
+    Church/InitialAlgebrasCont.agda
+    Church/FinalColgebras.agda
+
+    using
+
+    Graph/Source.agda
+    Graph/Target.agda
+
+*** Section 4.2 "Sized types" refers to the files
+
+    ParamSize.agda
+    SizeAlgebras.agda
+    SizeCoAlgebras.agda
+   
+
+** For clarity, this docker file contains:
+*** a standard Debian testing operating system
+*** a pre-built and -installed version of the parametric branch of Agda
+     Sources can be downloaded as follows:
+
+      git clone https://github.com/agda/agda.git
+      cd agda
+      git checkout parametric
+
+*** an emacs installation pre-configured to use the correct Agda implementation
+
+    This is the program you are (should be) looking at.
+
+*** Copies of the Agda-parametric proofs described in the paper (see above)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#+STARTUP: showeverything
