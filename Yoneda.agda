@@ -10,7 +10,7 @@ module Proof {a}
   where
 
   [A→] : IsFunctor {a} (\ X → A → X)
-  [A→] = con (λ {A₁} {B} z z₁ z₂ → z (z₁ z₂)) (refl _) (λ f g → refl _)
+  [A→] = con (λ f g x → f (g x)) (refl _) (λ _ _ → refl _)
 
   module M = ProofId _ _ [A→] [F]
 
