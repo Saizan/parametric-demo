@@ -109,6 +109,14 @@ infix 2 #Σ-syntax
 
 syntax #Σ-syntax A (λ x → B) = #Σ[ x ∈ A ] B
 
+uncurry# : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} A → Set ℓB}
+  → {C :{#} #Σ A B → Set ℓC}
+  → (c : (a :{#} A) → (b : B a) → C [# a , b ])
+  → (p : #Σ A B)
+  → C p
+uncurry# {C = C} c p = #split p C c
+
+
 -- Pointwise Σ-type --
 ----------------------
 

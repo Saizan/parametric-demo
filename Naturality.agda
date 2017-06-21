@@ -5,7 +5,7 @@ open import TypeSystem
 open import Graph.Target
 import Graph.Span as GraphSpan
 
-record IsFunctor {a} (F : Set a → Set a) : Set (lsuc a) where
+record IsFunctor {a b} (F : Set a → Set b) : Set (lsuc (a ⊔ b)) where
    constructor con
    field
      map : ∀ {A B :{#} Set a} → (A → B) → F A → F B
@@ -13,17 +13,17 @@ record IsFunctor {a} (F : Set a → Set a) : Set (lsuc a) where
      map-∘ : ∀ {A B C :{#} Set a} → (f : B → C) → (g : A → B) → ∀ {x} → map f (map g x) ≡ map (f ∘ g) x
 
 
-map : ∀ {a} {F :{#} Set a → Set a} → ([F] : IsFunctor F) → ∀ {A B :{#} Set a} → (A → B) → F A → F B
+map : ∀ {a b} {F :{#} Set a → Set b} → ([F] : IsFunctor F) → ∀ {A B :{#} Set a} → (A → B) → F A → F B
 map (con x _ _) = x
 
-map-id : ∀ {a} {F :{#} Set a → Set a} → ([F] : IsFunctor F) → ∀ {A :{#} Set a} {x} → map [F] (\ (x : A) → x) x ≡ x
+map-id : ∀ {a b} {F :{#} Set a → Set b} → ([F] : IsFunctor F) → ∀ {A :{#} Set a} {x} → map [F] (\ (x : A) → x) x ≡ x
 map-id (con _ x _) = x
 
-map-∘ : ∀ {a} {F :{#} Set a → Set a} → ([F] : IsFunctor F) → ∀ {A B C :{#} Set a} → (f : B → C) → (g : A → B)
+map-∘ : ∀ {a b} {F :{#} Set a → Set b} → ([F] : IsFunctor F) → ∀ {A B C :{#} Set a} → (f : B → C) → (g : A → B)
         → ∀ {x} → map [F] f (map [F]  g x) ≡ map [F] (f ∘ g) x
 map-∘ (con x _ y) = y
 
-module Proof¶ {a} (F G :{#} Set a → Set a) ([F] : IsFunctor F) ([G] : IsFunctor G)
+module Proof¶ {a b} (F G :{#} Set a → Set b) ([F] : IsFunctor F) ([G] : IsFunctor G)
                  (eta : ∀ (A :{#} Set a) → F A → G A)
                  (A B :{#} Set a) (f :{¶} A → B) where
 
@@ -36,7 +36,7 @@ module Proof¶ {a} (F G :{#} Set a → Set a) ([F] : IsFunctor F) ([G] : IsFunct
                     (map-id [G]))
 
 
-module ProofId {a} (F G :{#} Set a → Set a) ([F] : IsFunctor F) ([G] : IsFunctor G)
+module ProofId {a b} (F G :{#} Set a → Set b) ([F] : IsFunctor F) ([G] : IsFunctor G)
                  (eta : ∀ (A :{#} Set a) → F A → G A)
                  (A B :{#} Set a) (f : A → B) where
 
