@@ -1,0 +1,34 @@
+Constructions:
+* (X fibred-by f) means (x : X) x (y : Y) x (f x = y). There are maps (parametric in f)
+	* get-image : (X fibred-by f) -> Y
+	* unfibre : (X fibred-by f) -> X
+	so that f º unfibre = get-image
+	`unfibre` has an inverse `fibre`, which however is only continuous in f. 
+* (Y cofibred-by f) has constructors (parametric in f)
+	* from-preimage : X -> Y cofibred-by f
+	* cofibre : Y -> Y cofibred-by f
+	* quot : (x : X) -> (from-preimage x) = (cofibre (f x))
+	cofibre has an inverse, which however is only continuous in f.
+
+Ways to prove initial algebras:
+1) With ¶
+2) With a trick: don't use naturality over f : X -> Y, but over get-image : (X fibred-by f) -> Y
+3) With a trick: don't use naturality over f : X -> Y, but over from-preimage : X -> (Y cofibred-by f)
+	-However, this requires a quotient inductive type
+	-However, you cannot prove that (Y cofibred-by f) is an algebra with the required definitional equalities
+4) Define /f/ using Glue over (Y cofibred-by f)
+	-However, this requires a quotient inductive type
+	-You cannot define push, because quot gives you a propositional equality where you need a definitional one
+5) Require the functor to commute with Weld and apply one of the approaches for co-algebras.
+	-This is an obscure requirement.
+
+Ways to prove final co-algebras
+1) With ¶
+2) With a trick: don't use naturality over f : X -> Y, but over from-preimage : X -> (Y cofibred-by f)
+	-However, this requires a quotient inductive type
+3) With a trick: don't use naturality over f : X -> Y, but over get-image : (X fibred-by f) -> Y
+	-However, you cannot prove that (X fibred-by f) is a co-algebra with the required definitional equalities
+4) Define /f/ using Weld over (X fibred-by f)
+	-You cannot define pull, because you get a propositional equality where you need a definitional one.
+5) Require the functor to commute with Glue and apply one of the approaches for algebras.
+	-This is an obscure requirement.
