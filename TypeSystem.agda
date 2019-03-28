@@ -297,6 +297,22 @@ unglue[_] : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) �
   → Glue⟨ A ← T , f ⟩ → A
 unglue[_] {A = A} {φ = φ} f g = unglue {_}{_}{A}{φ} g
 
+-- WELD
+
+Weld⟨_⇒_,_⟩ : ∀{ℓ} (A : Set ℓ) {φ : Prop} (T : Partial (Set ℓ) φ) (f :{¶} PartialP φ (λ o → A → T o)) → Set ℓ
+Weld⟨ A ⇒ T , f ⟩ = Weld A _ T f
+weld[_] : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} (f :{¶} PartialP φ (λ o → A → T o))
+  → A → Weld⟨ A ⇒ T , f ⟩
+weld[_] {A = A} {φ = φ} f a = weld {_}{_}{A}{φ} a
+ext-mweld : ∀{ℓ ℓC} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} {f :{¶} PartialP φ (λ o → A → T o)}
+  → (C :{#} Weld⟨ A ⇒ T , f ⟩ → Set ℓC)
+  → (h : PartialP {ℓ ⊔ ℓC} φ (λ{(φ = p⊤) → (t : T itIsOne) → C t}))
+  → ((a : A) → C (weld[ f ] a) [ (λ{(φ = p⊤) → h itIsOne (f _ a)}) ])
+  → (w : Weld⟨ A ⇒ T , f ⟩)
+  → C w
+ext-mweld {φ = φ} {f = f} C h g w =
+  mweld {C = C} (λ a → paste[ (λ{(φ = p⊤) → h itIsOne (f _ a)}) ] g a) (λ{(φ = p⊤) → h itIsOne}) w
+
 -- EQUALITY
 
 subst : ∀ {a p} → {A :{#} Set a} → (P :{#} A → Set p) →
