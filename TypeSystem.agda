@@ -178,16 +178,16 @@ open Welding public renaming (primCoGlue to Weld ; prim^coglue to weld ; prim^mc
 -------------------------------------------
 
 postulate
-  _[_↦_] : ∀{ℓ} (A : Set ℓ) → ∀ φ → (a : Partial A φ) → Set ℓ
-  cut : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → A [ φ ↦ (λ _ → a) ]
-  paste[_↦_]_ : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) (pa : Partial A φ) → A [ φ ↦ pa ] → A
-  rw-ext-def : ∀{ℓ} {A :{#} Set ℓ} (pa : Partial A p⊤) (exta : A [ p⊤ ↦ pa ]) → paste[ p⊤ ↦ pa ] exta ≡ pa itIsOne
+  _[_] : ∀{ℓ} (A : Set ℓ) → ∀ {φ} → (a : Partial A φ) → Set ℓ
+  cut : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → A [ (λ {(φ = p⊤) → a}) ]
+  paste[_]_ : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (pa : Partial A φ) → A [ pa ] → A
+  rw-ext-def : ∀{ℓ} {A :{#} Set ℓ} (pa : Partial A p⊤) (exta : A [ pa ]) → paste[ pa ] exta ≡ pa itIsOne
 
 {-# REWRITE rw-ext-def #-}
 
 postulate
-  rw-ext-β : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → paste[ φ ↦ (λ _ → a) ] cut a ≡ a
-  rw-ext-η : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) (pa : Partial A φ) (exta : A [ φ ↦ pa ]) → cut (paste[ φ ↦ pa ] exta) ≡ exta
+  rw-ext-β : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → paste[ (λ{(φ = p⊤) → a}) ] cut a ≡ a
+  rw-ext-η : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) (pa : Partial A φ) (exta : A [ pa ]) → cut (paste[ pa ] exta) ≡ exta
   
 {-# REWRITE rw-ext-β #-}
 {-# REWRITE rw-ext-η #-}
@@ -280,22 +280,22 @@ postulate
 -- PATHS
 
 PathP : ∀{ℓ} (A : 𝕀 → Set ℓ) (a0 : A i0) (a1 : A i1) → Set ℓ
-PathP A a0 a1 = (i :{#} 𝕀) → A i [ (i ≣ i0) ∨ (i ≣ i1) ↦ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ]
+PathP A a0 a1 = (i :{#} 𝕀) → A i [ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ]
 Path : ∀{ℓ} {A : Set ℓ} (a0 a1 : A) → Set ℓ
 Path {ℓ} {A} a0 a1 = PathP (λ _ → A) a0 a1
 _◆_ : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} {a0 : A i0} {a1 : A i1} → PathP A a0 a1 → (i :{#} 𝕀 ) → A i
-_◆_ {a0 = a0} {a1} p i = paste[ (i ≣ i0) ∨ (i ≣ i1) ↦ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ] p i
+_◆_ {a0 = a0} {a1} p i = paste[ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ] p i
 
 -- GLUE
 
-Glue⟨_←[_↦_,_]⟩ : ∀{ℓ} (A : Set ℓ) (φ : Prop) (T : Partial (Set ℓ) φ) (f :{¶} PartialP φ (λ o → T o → A)) → Set ℓ
-Glue⟨ A ←[ φ ↦ T , f ]⟩ = Glue A φ T f
-glue⟨[_↦_]↦_⟩ : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) {T :{#} Partial (Set ℓ) φ} {f :{¶} PartialP φ (λ o → T o → A)}
-  (t : PartialP φ T) (exta : A [ φ ↦ (λ o → f o (t o)) ]) → Glue⟨ A ←[ φ ↦ T , f ]⟩
-glue⟨[ φ ↦ t ]↦ exta ⟩ = glue (λ {(φ = p⊤) → t itIsOne}) (paste[ φ ↦ _ ] exta)
-unglue[_↦_] : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) {T :{#} Partial (Set ℓ) φ} (f :{¶} PartialP φ (λ o → T o → A))
-  → Glue⟨ A ←[ φ ↦ T , f ]⟩ → A
-unglue[_↦_] {A = A} φ f g = unglue {_}{_}{A}{φ} g
+Glue⟨_←_,_⟩ : ∀{ℓ} (A : Set ℓ) {φ : Prop} (T : Partial (Set ℓ) φ) (f :{¶} PartialP φ (λ o → T o → A)) → Set ℓ
+Glue⟨ A ← T , f ⟩ = Glue A _ T f
+glue⟨_↦_⟩ : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} {f :{¶} PartialP φ (λ o → T o → A)}
+  (t : PartialP φ T) (exta : A [ (λ{(φ = p⊤) → f _ (t _)}) ]) → Glue⟨ A ← T , f ⟩
+glue⟨_↦_⟩ {φ = φ} {f = f} t exta = glue (λ{(φ = p⊤) → t _}) (paste[ (λ{(φ = p⊤) → f _ (t _)}) ] exta)
+unglue[_] : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} (f :{¶} PartialP φ (λ o → T o → A))
+  → Glue⟨ A ← T , f ⟩ → A
+unglue[_] {A = A} {φ = φ} f g = unglue {_}{_}{A}{φ} g
 
 -- EQUALITY
 
