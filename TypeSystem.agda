@@ -178,16 +178,16 @@ open Welding public renaming (primCoGlue to Weld ; prim^coglue to weld ; prim^mc
 -------------------------------------------
 
 postulate
-  _[_] : ∀{ℓ} (A : Set ℓ) → ∀ {φ} → (a : Partial A φ) → Set ℓ
-  cut : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → A [ (λ {(φ = p⊤) → a}) ]
-  paste[_]_ : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (pa : Partial A φ) → A [ pa ] → A
-  rw-ext-def : ∀{ℓ} {A :{#} Set ℓ} (pa : Partial A p⊤) (exta : A [ pa ]) → paste[ pa ] exta ≡ pa itIsOne
+  _[_] : ∀{ℓ} (A : Set ℓ) → ∀ {φ} → (a :{¶} Partial A φ) → Set ℓ
+  cut : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a :{¶} A) → A [ (λ {(φ = p⊤) → a}) ]
+  paste[_]_ : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (pa :{¶} Partial A φ) → A [ pa ] → A
+  rw-ext-def : ∀{ℓ} {A :{#} Set ℓ} (pa :{¶} Partial A p⊤) (exta : A [ pa ]) → paste[ pa ] exta ≡ pa itIsOne
 
 {-# REWRITE rw-ext-def #-}
 
 postulate
-  rw-ext-β : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a : A) → paste[ (λ{(φ = p⊤) → a}) ] cut a ≡ a
-  rw-ext-η : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) (pa : Partial A φ) (exta : A [ pa ]) → cut (paste[ pa ] exta) ≡ exta
+  rw-ext-β : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} (a :{¶} A) → paste[ (λ{(φ = p⊤) → a}) ] cut a ≡ a
+  rw-ext-η : ∀{ℓ} {A :{#} Set ℓ} (φ :{#} Prop) (pa :{¶} Partial A φ) (exta :{¶} A [ pa ]) → cut (paste[ pa ] exta) ≡ exta
   
 {-# REWRITE rw-ext-β #-}
 {-# REWRITE rw-ext-η #-}
@@ -279,13 +279,13 @@ postulate
 
 -- PATHS
 
-PathP : ∀{ℓ} (A : 𝕀 → Set ℓ) (a0 : A i0) (a1 : A i1) → Set ℓ
+PathP : ∀{ℓ} (A : 𝕀 → Set ℓ) (a0 :{¶} A i0) (a1 :{¶} A i1) → Set ℓ
 PathP A a0 a1 = (i :{#} 𝕀) → A i [ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ]
-Path : ∀{ℓ} {A : Set ℓ} (a0 a1 : A) → Set ℓ
+Path : ∀{ℓ} {A : Set ℓ} (a0 a1 :{¶} A) → Set ℓ
 Path {ℓ} {A} a0 a1 = PathP (λ _ → A) a0 a1
-_◆_ : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} {a0 : A i0} {a1 : A i1} → PathP A a0 a1 → (i :{#} 𝕀 ) → A i
+_◆_ : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} {a0 :{¶} A i0} {a1 :{¶} A i1} → PathP A a0 a1 → (i :{#} 𝕀 ) → A i
 _◆_ {a0 = a0} {a1} p i = paste[ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ] p i
-path-abs : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} (a : (i :{#} 𝕀) → A i) → PathP A (a i0) (a i1)
+path-abs : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} (a :{¶} (i :{#} 𝕀) → A i) → PathP A (a i0) (a i1)
 path-abs a i = cut (a i)
 syntax path-abs (λ i → a) = λ⟨ i ⟩ a
 
@@ -294,7 +294,7 @@ syntax path-abs (λ i → a) = λ⟨ i ⟩ a
 Glue⟨_←_,_⟩ : ∀{ℓ} (A : Set ℓ) {φ : Prop} (T : Partial (Set ℓ) φ) (f :{¶} PartialP φ (λ o → T o → A)) → Set ℓ
 Glue⟨ A ← T , f ⟩ = Glue A _ T f
 glue⟨_↦_⟩ : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} {f :{¶} PartialP φ (λ o → T o → A)}
-  (t : PartialP φ T) (exta : A [ (λ{(φ = p⊤) → f _ (t _)}) ]) → Glue⟨ A ← T , f ⟩
+  (t :{¶} PartialP φ T) (exta : A [ (λ{(φ = p⊤) → f _ (t _)}) ]) → Glue⟨ A ← T , f ⟩
 glue⟨_↦_⟩ {φ = φ} {f = f} t exta = glue (λ{(φ = p⊤) → t _}) (paste[ (λ{(φ = p⊤) → f _ (t _)}) ] exta)
 unglue[_] : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} (f :{¶} PartialP φ (λ o → T o → A))
   → Glue⟨ A ← T , f ⟩ → A
@@ -307,14 +307,16 @@ Weld⟨ A ⇒ T , f ⟩ = Weld A _ T f
 weld[_] : ∀{ℓ} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} (f :{¶} PartialP φ (λ o → A → T o))
   → A → Weld⟨ A ⇒ T , f ⟩
 weld[_] {A = A} {φ = φ} f a = weld {_}{_}{A}{φ} a
+{-
 ext-mweld : ∀{ℓ ℓC} {A :{#} Set ℓ} {φ :{#} Prop} {T :{#} Partial (Set ℓ) φ} {f :{¶} PartialP φ (λ o → A → T o)}
   → (C :{#} Weld⟨ A ⇒ T , f ⟩ → Set ℓC)
-  → (h : PartialP {ℓ ⊔ ℓC} φ (λ{(φ = p⊤) → (t : T itIsOne) → C t}))
-  → ((a : A) → C (weld[ f ] a) [ (λ{(φ = p⊤) → h itIsOne (f _ a)}) ])
+  → (h :{¶} PartialP {ℓ ⊔ ℓC} φ (λ{(φ = p⊤) → (t : T itIsOne) → C t}))
+  → ((a :{¶} A) → C (weld[ f ] a) [ (λ{(φ = p⊤) → h itIsOne (f _ a)}) ])
   → (w : Weld⟨ A ⇒ T , f ⟩)
   → C w
 ext-mweld {φ = φ} {f = f} C h g w =
   mweld {C = C} (λ a → paste[ (λ{(φ = p⊤) → h itIsOne (f _ a)}) ] g a) (λ{(φ = p⊤) → h itIsOne}) w
+-}
 
 -- EQUALITY
 
@@ -372,5 +374,5 @@ A ∋ a = a
 path-to-eq : ∀{ℓ} → {A :{#} Set ℓ} → (p :{#} (_ :{#} 𝕀) → A) → p i0 ≡ p i1
 path-to-eq p = sym (#cong-app (pathDisc p) i1)
 
-ext-path-to-eq : ∀{ℓ} → {A :{#} Set ℓ} {a0 a1 : A} → (p :{#} Path a0 a1) → a0 ≡ a1
+ext-path-to-eq : ∀{ℓ} → {A :{#} Set ℓ} {a0 a1 :{¶} A} → (p :{#} Path a0 a1) → a0 ≡ a1
 ext-path-to-eq p = path-to-eq (λ i → p ◆ i)
