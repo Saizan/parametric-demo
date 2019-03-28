@@ -285,6 +285,9 @@ Path : ∀{ℓ} {A : Set ℓ} (a0 a1 : A) → Set ℓ
 Path {ℓ} {A} a0 a1 = PathP (λ _ → A) a0 a1
 _◆_ : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} {a0 : A i0} {a1 : A i1} → PathP A a0 a1 → (i :{#} 𝕀 ) → A i
 _◆_ {a0 = a0} {a1} p i = paste[ (λ {((i ≣ i0) = p⊤) → a0 ; ((i ≣ i1) = p⊤) → a1}) ] p i
+path-abs : ∀{ℓ} {A :{#} 𝕀 → Set ℓ} (a : (i :{#} 𝕀) → A i) → PathP A (a i0) (a i1)
+path-abs a i = cut (a i)
+syntax path-abs (λ i → a) = λ⟨ i ⟩ a
 
 -- GLUE
 
