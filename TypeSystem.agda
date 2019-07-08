@@ -124,21 +124,54 @@ uncurry# {C = C} c p = #split p C c
 --With the parametric induction principle, we could define ¶fst and ¶snd
 postulate
   [¶_,_] : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (a :{¶} A) → (b : B a) → ¶Σ A B
-  ¶split : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
-    → (p : ¶Σ A B)
-    → (C :{#} ¶Σ A B → Set ℓC)
-    → (c : (a :{¶} A) → (b : B a) → C [¶ a , b ])
-    → C p
-  rw-¶Σ-β : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
-    → (a :{¶} A) → (b : B a)
-    → (C :{#} ¶Σ A B → Set ℓC)
-    → (c : (a :{¶} A) → (b : B a) → C [¶ a , b ])
-    → ¶split [¶ a , b ] C c ≡ c a b
-{-# REWRITE rw-¶Σ-β #-}
+  ¶fst : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (_ :{#} ¶Σ A B) → A
+  ¶snd : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (p : ¶Σ A B) → B (¶fst p)
+  rw-¶fst : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (a :{¶} A) → (b : B a)
+            → ¶fst ([¶_,_] {_}{_}{A}{B} a b) ≡ a
+{-# REWRITE rw-¶fst #-}
 
---¶fst : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (_ :{#} ¶Σ A B) → A
---¶fst {_}{_}{A}{B} p = ¶split p (λ _ → A) (λ a b → a)
+postulate
+  rw-¶snd : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (a :{¶} A) → (b : B a)
+            → ¶snd ([¶_,_] {_}{_}{A}{B} a b) ≡ b
+  rw-¶fst,¶snd : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} A → Set ℓB} → (p : ¶Σ A B)
+                 → [¶_,_] {_}{_}{A}{B} (¶fst p) (¶snd p) ≡ p
+{-# REWRITE rw-¶snd #-}
+{-# REWRITE rw-¶fst,¶snd #-}
 
+¶split : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
+  → (p : ¶Σ A B)
+  → (C :{#} ¶Σ A B → Set ℓC)
+  → (c : (a :{¶} A) → (b : B a) → C [¶ a , b ])
+  → C p
+¶split p C c = c (¶fst p) (¶snd p)
+
+rw-¶Σ-β : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
+  → (a :{¶} A) → (b : B a)
+  → (C :{#} ¶Σ A B → Set ℓC)
+  → (c : (a :{¶} A) → (b : B a) → C [¶ a , b ])
+  → ¶split [¶ a , b ] C c ≡ c a b
+rw-¶Σ-β a b C c = refl _
+
+¶split# : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
+  → (p :{#} ¶Σ A B)
+  → (C :{#} (s :{#} ¶Σ A B) → Set ℓC)
+  → (c : (a :{¶} A) → (b :{#} B a) → C [¶ a , b ])
+  → C p
+¶split# p C c = c (¶fst p) (¶snd p)
+
+rw-¶Σ-β# : ∀{ℓA ℓB ℓC} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB}
+  → (a :{¶} A) → (b :{#} B a)
+  → (C :{#} (s :{#} ¶Σ A B) → Set ℓC)
+  → (c : (a :{¶} A) → (b :{#} B a) → C [¶ a , b ])
+  → ¶split# [¶ a , b ] C c ≡ c a b
+rw-¶Σ-β# a b C c = refl _
+
+{-¶fst : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (_ :{#} ¶Σ A B) → A
+¶fst {_}{_}{A}{B} p = ¶split# p (λ _ → A) (λ a b → a)
+
+¶snd : ∀{ℓA ℓB} → {A :{#} Set ℓA} → {B :{#} (_ :{¶} A) → Set ℓB} → (p : ¶Σ A B) → B (¶fst p)
+¶snd {_}{_}{A}{B} p = ¶split p (λ p → B (¶fst p)) (λ a b → b)
+-}
 --¶snd : ∀{ℓA ℓB} → h#Π (Set ℓA) λ A → h#Π ((_ :{¶} A) → Set ℓB) λ B → (p : ¶Σ A B) → B (¶fst p)
 --¶snd {_}{_}{A}{B} p = ¶split p (λ p → B (¶fst p)) (λ a b → b)
 
@@ -314,3 +347,68 @@ postulate
   unit-rw : ∀ {a} {A :{ # } ⊤ → Set a} → (t : A tt) → unit {A = A} t tt ≡ t
 
 {-# REWRITE unit-rw #-}
+
+
+unique-⊤ : (x y : ⊤) → x ≡ y
+unique-⊤ x y = unit {A = λ t → t ≡ y} (unit {A = λ t' → tt ≡ t'} (refl tt) y) x
+
+---------------
+-- Numbers
+---------------
+
+postulate
+  Nat : Set
+  zero : Nat
+  succ : Nat → Nat
+  nat : ∀ {ℓ} {A :{#} Nat → Set ℓ}
+          → (z : A zero)
+          → (s : (n : Nat) → A n → A (succ n))
+          → (n : Nat)
+          → A n
+  nat-rw0 : ∀ {ℓ} {A :{#} Nat → Set ℓ}
+              → (z : A zero)
+              → (s : (n : Nat) → A n → A (succ n))
+              → nat z s zero ≡ z
+  nat-rws : ∀ {ℓ} {A :{#} Nat → Set ℓ}
+              → (z : A zero)
+              → (s : (n : Nat) → A n → A (succ n))
+              → (n : Nat)
+              → nat z s (succ n) ≡ s n (nat z s n)
+
+{-# REWRITE nat-rw0 #-}
+{-# REWRITE nat-rws #-}
+
+_+Nat_ : Nat → Nat → Nat
+_+Nat_ m n = nat n (λ _ r → succ r) m
+
+---------------
+-- Lists
+---------------
+
+postulate
+  List : ∀ {ℓ} → Set ℓ → Set ℓ
+  [] : ∀ {ℓ} {A :{#} Set ℓ} → List A
+  _::_ : ∀ {ℓ} {A :{#} Set ℓ} → A → List A → List A
+  list : ∀ {ℓA ℓB} {A :{#} Set ℓA} {B :{#} List A → Set ℓB}
+           → (empty : B [])
+           → (cons : (a : A) → (l : List A) → (p : B l) → B (a :: l))
+           → (l : List A)
+           → B l
+  list-rw[] : ∀ {ℓA ℓB} {A :{#} Set ℓA} {B :{#} List A → Set ℓB}
+                → (empty : B [])
+                → (cons : (a : A) → (l : List A) → (p : B l) → B (a :: l))
+                → list empty cons [] ≡ empty
+  list-rw:: : ∀ {ℓA ℓB} {A :{#} Set ℓA} {B :{#} List A → Set ℓB}
+                → (empty : B [])
+                → (cons : (a : A) → (l : List A) → (p : B l) → B (a :: l))
+                → (a : A) → (l : List A)
+                → list empty cons (a :: l) ≡ cons a l (list empty cons l)
+
+{-# REWRITE list-rw[] #-}
+{-# REWRITE list-rw:: #-}
+
+sum : List Nat → Nat
+sum l = list zero (λ n _ s → n +Nat s) l
+
+concat : ∀ {ℓ} {A :{#} Set ℓ} → List (List A) → List A
+concat ll = list [] (λ lh _ concat-lt → list concat-lt (λ h _ concat-t → h :: concat-t) lh) ll
